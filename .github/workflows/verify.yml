@@ -1,0 +1,61 @@
+name: Verify Envoy PROXY wire order
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wire-order-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  wire-order:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GOTOOLCHAIN: local
+      GOFLAGS: -mod=readonly
+      GOMAXPROCS: "2"
+      GOMEMLIMIT: 768MiB
+      ENVOY_IMAGE: envoyproxy/envoy@sha256:6a52be0cfec632bf31fe3197db078f0b3ea039a5a6d9edf2779abcbe34d81e20
+      OUTPUT_DIR: ${{ github.workspace }}/evidence
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: "1.27.3"
+          cache: false
+      - name: Compile pinned experiment
+        shell: bash
+        run: |
+          mkdir -p evidence
+          git rev-parse HEAD > evidence/commit.txt
+          git ls-files -z | xargs -0 sha256sum > evidence/tracked-source.sha256
+          go version | tee evidence/go-version.txt
+          go test -c -tags=integration -o /tmp/wire-order.test .
+          go vet -tags=integration .
+          go mod verify
+          python3 scripts/check_inputs.py
+          go version -m /tmp/wire-order.test > evidence/test-binary-buildinfo.txt
+          sha256sum /tmp/wire-order.test > evidence/test-binary.sha256
+          git diff --exit-code -- go.mod go.sum dependencies
+          test -z "$(gofmt -l wire_order_test.go)"
+      - name: Pull immutable Envoy image
+        shell: bash
+        run: |
+          timeout 120s docker pull --platform linux/amd64 "$ENVOY_IMAGE"
+          docker image inspect "$ENVOY_IMAGE" > evidence/envoy-image.json
+          docker run --rm --entrypoint /usr/local/bin/envoy "$ENVOY_IMAGE" --version > evidence/envoy-version.txt
+      - name: Observe six protocol cases
+        shell: bash
+        run: |
+          go tool test2json -p github.com/kimjooyoon/traefik-12100-wire-order -t /tmp/wire-order.test -test.v -test.run '^TestTLSProxyProtocolWireOrder$' -test.timeout=180s | tee evidence/test.jsonl
+          python3 scripts/check_results.py evidence/test.jsonl
+      - name: Retain small evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wire-order-${{ github.sha }}
+          path: evidence/
+          retention-days: 7
+          if-no-files-found: error

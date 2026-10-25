@@ -1,0 +1,90 @@
+{
+  "schema": "traefik12100/wire-order-inputs/v1",
+  "source": {
+    "repository": "https://github.com/traefik/traefik",
+    "commit": "0746caeabd74ab7d666427e3f09fdc1465dcfffd",
+    "go_module": "v3.7.17-0.20261023133807-0746caeabd74",
+    "go_module_info": {
+      "Version": "v3.7.17-0.20261023133807-0746caeabd74",
+      "Time": "2026-10-23T13:38:07Z",
+      "Origin": {
+        "VCS": "git",
+        "URL": "https://github.com/traefik/traefik",
+        "Hash": "0746caeabd74ab7d666427e3f09fdc1465dcfffd"
+      }
+    },
+    "go_mod_and_sum": "Upstream dependency manifests plus this module and its checksums; local ext replacement copied unchanged from the same commit.",
+    "copied_nested_module": [
+      {
+        "upstream_file": "pkg/config/dynamic/ext/ext.go",
+        "local_file": "dependencies/traefik-ext/ext.go",
+        "bytes": 132,
+        "sha256": "fdd9a8232809b310da14d1f2bc467d9d45dd3d0d9937fc2f3280b779b52861d1"
+      },
+      {
+        "upstream_file": "pkg/config/dynamic/ext/go.mod",
+        "local_file": "dependencies/traefik-ext/go.mod",
+        "bytes": 57,
+        "sha256": "406b1bce4e6ba31bbdaad3f9085b83b88e2b70db438e166b761c1c67cbdf370b"
+      }
+    ],
+    "dialer_file_sha256": "de7b36ceb72c43e54ba00dabf278bbc8f808c09f73fa908b18270a0bf3a9b661",
+    "original_go_mod_sha256": "ff6305e1b9717d420d3e8d13fc6eb89d734de28b21ace40b629c641d9229af2e",
+    "original_go_sum_sha256": "ec939ec006f6e43e741b21e911cb2e77166e5651a4b3eb6381c495249fb56452"
+  },
+  "human_need": {
+    "issue": "https://github.com/traefik/traefik/issues/12100",
+    "request": "https://github.com/traefik/traefik/issues/12100#issuecomment-6126567762",
+    "reporter_unable_to_test": "https://github.com/traefik/traefik/issues/12100#issuecomment-6132344878"
+  },
+  "envoy": {
+    "tag": "envoyproxy/envoy:v1.36.2",
+    "index_digest": "sha256:4972515dd9a069b44beb43cebba7851596e72a8c61cd7a7c33d8f48efc5280ba",
+    "index_sha256": "4972515dd9a069b44beb43cebba7851596e72a8c61cd7a7c33d8f48efc5280ba",
+    "platform": "linux/amd64",
+    "manifest_digest": "sha256:6a52be0cfec632bf31fe3197db078f0b3ea039a5a6d9edf2779abcbe34d81e20",
+    "image": "envoyproxy/envoy@sha256:6a52be0cfec632bf31fe3197db078f0b3ea039a5a6d9edf2779abcbe34d81e20"
+  },
+  "go_version": "1.27.3",
+  "actions": [
+    {
+      "repo": "actions/checkout",
+      "ref": "v5",
+      "sha": "fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+      "html_url": "https://github.com/actions/checkout/commit/fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09"
+    },
+    {
+      "repo": "actions/setup-go",
+      "ref": "v6",
+      "sha": "924ae3a1cded613372ab5595356fb5720e22ba16",
+      "html_url": "https://github.com/actions/setup-go/commit/924ae3a1cded613372ab5595356fb5720e22ba16"
+    },
+    {
+      "repo": "actions/upload-artifact",
+      "ref": "v4",
+      "sha": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+      "html_url": "https://github.com/actions/upload-artifact/commit/ea165f8d65b6e75b540449e92b4886f43607fa02"
+    }
+  ],
+  "scope": {
+    "actual_traefik_default_dialer": true,
+    "actual_envoy_mtls_data_plane": true,
+    "after_tls_header": "Manual counterfactual control on the returned verified TLS connection; no Traefik source patch.",
+    "consul_control_plane": false,
+    "reporter_environment": false,
+    "upstream_fix": false,
+    "upstream_acceptance": false
+  },
+  "resource_bound": {
+    "runner": "standard ubuntu-24.04 public GitHub-hosted runner",
+    "jobs": 1,
+    "timeout_minutes": 12,
+    "gomaxprocs": 2,
+    "gomemlimit": "768MiB soft GC target, not a hard memory quota",
+    "envoy_cpus": 1,
+    "envoy_memory": "256m",
+    "schedule": null,
+    "local_container_downloads": false
+  },
+  "kind": "Pinned experiment inputs and scope; not an execution receipt"
+}
